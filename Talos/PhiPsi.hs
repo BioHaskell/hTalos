@@ -1,21 +1,39 @@
-{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables, DeriveDataTypeable, PatternGuards #-}
 module Talos.PhiPsi( parsePhiPsi
                    , parsePhiPsiFile
                    , PhiPsi(..)      ) where
 
 import Control.Monad.Instances()
 import Data.Typeable
+import Data.Data
 import Data.List(partition)
 import Data.Either(partitionEithers)
 
 import qualified Data.ByteString.Char8 as BS
 
-import Rosetta.SS
+data SS = Alpha
+        | Beta
+        | Random
+  deriving (Eq, Ord, Enum, Typeable, Data)
+
+s `withoutPrefix` p | (r, rest) <- splitAt (length p) s, r == p = Just rest
+_ `withoutPrefix` _                                             = Nothing
+
+instance Read SS where
+  readsPrec _ s | Just r <- s `withoutPrefix` "random" = [(Random, r)]
+  readsPrec _ s | Just r <- s `withoutPrefix` "beta"   = [(Beta,   r)]
+  readsPrec _ s | Just r <- s `withoutPrefix` "alpha"  = [(Alpha,  r)]
+  readsPrec _ s                                        = []
+
+instance Show SS where
+  showsPrec _ Random = ("random"++)
+  showsPrec _ Beta   = ("beta"  ++)
+  showsPrec _ Alpha  = ("alpha" ++)
 
 data PhiPsi = PhiPsi { phi, psi :: Double
                      , resId    :: Int
                      , resName  :: BS.ByteString
-                     , ss       :: SSCode
+                     , ss       :: SS
                      }
   deriving (Eq, Show) -- add read later...
 
@@ -41,18 +59,13 @@ parsePhiPsi fname input = (goodRecords, errors)
         do aPhi     <- parseCol phiStr
            aPsi     <- parseCol psiStr
            aResId   <- parseCol resIdStr
-           aSS      <- parseSS  ssStr
+           aSS      <- parseCol ssStr
            return $ PhiPsi aPhi aPsi aResId resNameStr aSS
     parseCol :: (Read a, Typeable a) => BS.ByteString -> Either String a
     parseCol c = case reads $ BS.unpack c of
                    ((result, []):_) -> return result
                    l                -> let typeHolder = fst $ head l
                                        in colError c typeHolder
-    parseSS :: BS.ByteString -> Either String SSCode
-    parseSS "random" = return Loop -- not sure?
-    parseSS "beta"   = return Strand
-    parseSS "alpha"  = return Helix
-    parseSS c        = colError c Helix
     colError c t = fail ( "Cannot parse column " ++
                           (show . BS.unpack) c   ++
                           " as "                 ++
