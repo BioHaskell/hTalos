@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings, ScopedTypeVariables, DeriveDataTypeable, PatternGuards #-}
-module Talos.PhiPsi( parsePhiPsi
-                   , parsePhiPsiFile
-                   , PhiPsi(..)      ) where
+module Bio.Talos.PhiPsi( parsePhiPsi
+                       , parsePhiPsiFile
+                       , PhiPsi(..)      ) where
 
 import Control.Monad.Instances()
 import Data.Typeable
