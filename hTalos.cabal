@@ -1,5 +1,5 @@
 name:                hTalos
-version:             0.2
+version:             0.2.2
 stability:           alpha
 homepage:            https://github.com/mgajda/hTalos
 package-url:         http://hackage.haskell.org/package/hTalos
@@ -25,7 +25,7 @@ source-repository head
 
 Library
   ghc-options:      -fspec-constr-count=4 -O3 
-  build-depends:    base>=4.0, base <4.7, bytestring
+  build-depends:    base>=4.0, base <4.9, bytestring
   other-extensions: ScopedTypeVariables OverloadedStrings
   other-modules:    
   exposed-modules:  Bio.Talos.PhiPsi
@@ -33,7 +33,7 @@ Library
 
 Test-suite          test_PhiPsi
   type:             exitcode-stdio-1.0
-  build-depends:    base>=4.0, base <4.7, hTalos
+  build-depends:    base>=4.0, base <4.9, hTalos
   main-is:          test_PhiPsi.hs
   Hs-source-dirs:   tests/
 

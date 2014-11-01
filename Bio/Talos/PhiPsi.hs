@@ -3,7 +3,7 @@ module Bio.Talos.PhiPsi( parsePhiPsi
                        , parsePhiPsiFile
                        , PhiPsi(..)      ) where
 
-import Control.Monad.Instances()
+--import Control.Monad.Instances()
 import Data.Typeable
 import Data.Data
 import Data.List(partition)
